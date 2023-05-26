@@ -75,3 +75,7 @@
 0.4.0.13 -> 0.4.1.0
   + updated dependencies to GHC 9.2.5
   M removed TypeCompose dependency and embedded needed definitions of OO
+
+0.4.1.1 -> 0.4.1.1
+  + updated dependencies to GHC 9.2.8
+
