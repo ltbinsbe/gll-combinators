@@ -5,7 +5,7 @@ This is the GitHub repository of the Hackage package [gll](https://hackage.haske
 The following acadamic papers describe the workings of these packages:  
 
 * gll-combinators: [GLL parsing with flexible combinators](https://doi.org/10.1145/3276604.3276618)
-* fun-gllcombinators: [Purely functional GLL parsing](https://doi.org/10.1016/j.cola.2020.100945)
+* fungll-combinators: [Purely functional GLL parsing](https://doi.org/10.1016/j.cola.2020.100945)
 * Pre-prints are available [here](https://ltvanbinsbergen.nl/publications)
 
 The package gll provides generalised top-down parsing according to the (R)GLL parsing algorithm [Scott and Johnstone 2016].
