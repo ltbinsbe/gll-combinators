@@ -13,7 +13,7 @@ category:            Compilers
 build-type:          Simple 
 cabal-version:       1.22
 tested-with:         GHC >= 8.2.1 && <= 8.6, GHC == 8.8.3, GHC >= 9.2.5, GHC == 9.4.3, GHC == 9.6.7
-copyright:           Copyright (C) 2015-2023 L. Thomas van Binsbergen
+copyright:           Copyright (C) 2015-2026 L. Thomas van Binsbergen
 stability:           experimental
 homepage:            https://github.com/ltbinsbe/gll-combinators
 bug-reports:         https://github.com/ltbinsbe/gll-combinators/issues
@@ -42,13 +42,13 @@ extra-source-files: changelog.txt
 
 library
     hs-source-dirs  :   src
-    build-depends   :     base >=4.3.1.0 && <= 5 
-                        , containers >= 0.4
-                        , array
-                        , pretty
-                        , text
-                        , regex-applicative >= 0.3
-                        , time >= 1.8
+    build-depends   :     base >=4.3.1.0 && < 6 
+                        , containers >= 0.4 && < 0.9
+                        , array >= 0.5 && < 0.6
+                        , pretty >= 1.1 && < 1.2
+                        , text >= 2 && < 3
+                        , regex-applicative >= 0.3 && < 0.4
+                        , time >= 1.8 && < 2
     exposed-modules :     GLL.Combinators.Interface
                         , GLL.Combinators.BinaryInterface
                         , GLL.GrammarCombinators
