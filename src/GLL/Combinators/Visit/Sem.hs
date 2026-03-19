@@ -7,7 +7,6 @@ import GLL.Types.Derivations
 
 import Control.Monad (forM)
 import qualified Data.Array as A
-import qualified Data.IntMap as IM
 import qualified Data.Set as S
 
 type Sem_Symb t a = PCOptions -> Ancestors t 

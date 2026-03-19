@@ -3,7 +3,7 @@
 
 -- The name of the package.
 name:                gll
-version:             0.4.1.1
+version:             0.4.1.2
 synopsis:            GLL parser with simple combinator interface 
 license:             BSD3
 license-file:        LICENSE
@@ -12,7 +12,7 @@ maintainer:          L. Thomas van Binsbergen <ltvanbinsbergen@acm.org>
 category:            Compilers
 build-type:          Simple 
 cabal-version:       1.22
-tested-with:         GHC >= 8.2.1 && <= 8.6, GHC == 8.8.3, GHC >= 9.2.5, GHC == 9.4.3
+tested-with:         GHC >= 8.2.1 && <= 8.6, GHC == 8.8.3, GHC >= 9.2.5, GHC == 9.4.3, GHC == 9.6.7
 copyright:           Copyright (C) 2015-2023 L. Thomas van Binsbergen
 stability:           experimental
 homepage:            https://github.com/ltbinsbe/gll-combinators

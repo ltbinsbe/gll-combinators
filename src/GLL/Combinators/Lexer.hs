@@ -90,16 +90,20 @@ lTokens lexsets =
     <|> upcast . CharLit . Just <$> lCharLit
     <|> upcast . StringLit . Just <$> lStringLit
     <|> lMore
-  where     lMore = foldr ((<|>) . uncurry lToken) empty (tokens lexsets)
+  where     lMore :: SubsumesToken t => RE Char t 
+            lMore = foldr ((<|>) . uncurry lToken) empty (tokens lexsets)
 
             lChar c = upcast (Char c) <$ sym c
+            lCharacters :: SubsumesToken t => RE Char t
             lCharacters = foldr ((<|>) . lChar) empty (keychars lexsets)
 
             lKeyword k  = upcast (Keyword k) <$ string k
+            lKeywords :: SubsumesToken t => RE Char t
             lKeywords = foldr ((<|>) . lKeyword) empty (keywords lexsets)
 
 lToken t re = upcast . Token t . Just <$> re
 
+lStringLit :: RE Char String 
 lStringLit = toString <$ sym '\"' <*> many strChar <* sym '\"'
  where strChar =  sym '\\' *> sym '\"'
                   <|> psym ((/=) '\"')

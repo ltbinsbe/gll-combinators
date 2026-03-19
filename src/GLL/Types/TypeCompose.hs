@@ -6,7 +6,7 @@ import Prelude hiding ((.),id)
 
 import Control.Arrow (Arrow(..))
 import Control.Category (Category(..))
-import Control.Applicative (liftA, liftA2)
+import Control.Applicative (liftA)
 
 -- | Composition of type constructors: unary with binary.  Called
 -- "StaticArrow" in [1].

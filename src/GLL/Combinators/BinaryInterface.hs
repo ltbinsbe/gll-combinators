@@ -61,30 +61,12 @@ module GLL.Combinators.BinaryInterface (
               someSepBy, someSepBy1,someSepBy2,
      -- * Memoisation
     memo, newMemoTable, memClear, MemoTable, MemoRef, useMemoisation,
-    module GLL.Combinators.Interface
     ) where
 
 import GLL.Combinators.Interface hiding (within, (**>), (<**>), (<**), (<<<**>), (<<<**), (**>>>), (<**>>>), satisfy, (<||>), (<||), (||>), (<$$>), (<$$), (<:=>), (<:=),(<::=>), (<::=), mkNt, manySepBy, manySepBy1, manySepBy2, multiple, multipleSepBy, many, multipleSepBy1, multipleSepBy2, someSepBy, someSepBy1, someSepBy2, some, memo, some1, many1, multiple1, shortest_match, longest_match, (<**>>), (<<**>), angles, braces, brackets, parens, within, optional, optionalWithDef, preferably, reluctantly, chooses, chooses_prec)
 import qualified GLL.Combinators.Interface as IF
 import GLL.Combinators.Options
-import GLL.Combinators.Visit.Join
-import GLL.Combinators.Visit.Sem (emptyAncestors)
-import GLL.Combinators.Memoisation
-import GLL.Combinators.Lexer
-import GLL.Types.Grammar
 import GLL.Parser hiding (parse, parseWithOptions)
-import qualified GLL.Parser as GLL
-
-import GLL.Types.TypeCompose (OO(..))
-import Control.Arrow
-import qualified Data.Array as A
-import qualified Data.IntMap as IM
-import qualified Data.Map as M
-import Data.Text (pack)
-import Data.IORef 
-import Data.Time.Clock
-import System.IO.Unsafe
-
 
 infixl 2 <:=>
 -- | 

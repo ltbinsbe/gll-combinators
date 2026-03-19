@@ -51,6 +51,7 @@ main = do
                 j <- readIORef subcount
                 modifyIORef subcount succ
                 let parse_res   = parseWithParseOptions [noSelectTest] [useMemoisation] p str
+                    norm  :: (Eq a, Ord a) => [a] -> [a]
                     norm        = take 100 . sort . nub
                     norm_p_res  = norm parse_res
                     b           = norm_p_res == norm res
@@ -91,7 +92,8 @@ main = do
     test Nothing "<::=> <||>" pX [("ac", "a"), ("bc", "b")]
 
     --  (Right) Recursion
-    let pX = "X" <::=> (+1) <$$ char 'a' <**> pX <||> satisfy 0 
+    let pX :: BNF Char Int
+        pX = "X" <::=> (+1) <$$ char 'a' <**> pX <||> satisfy 0 
     test Nothing "rec1" pX [("", [0]), ("aa",[2]), (replicate 42 'a', [42]), ("bbb", [])]
 
     --  EBNF
@@ -102,7 +104,8 @@ main = do
     test Nothing "<||> optional" (pX <** optional (char 'z'))
                 [("az", "a"), ("bz", "b"), ("z", []), ("b", "b"), ("a", "a")]
 
-    let pX = "X" <::=> (1 <$$ optional (char 'a') <||> 2 <$$ optional (char 'b'))
+    let pX :: BNF Char Int
+        pX = "X" <::=> (1 <$$ optional (char 'a') <||> 2 <$$ optional (char 'b'))
     test Nothing "optional-ambig" (pX <** optional (char 'z'))
                 [("az", [1]), ("bz", [2]), ("z", [1,2]), ("b", [2]), ("a", [1])]
 
@@ -116,7 +119,8 @@ main = do
     let pX = "X" <::=> length <$$> multiple1 (char '1')
     test Nothing "multiple1" pX [("", []), ("11", [2]), (replicate 12 '1', [12])]
 
-    let pX = "X" <::=> 1 <$$ multiple (char 'a') <||> 2 <$$ multiple (char 'b')
+    let pX :: BNF Char Int
+        pX = "X" <::=> 1 <$$ multiple (char 'a') <||> 2 <$$ multiple (char 'b')
     test Nothing "(multiple <||> multiple) <**> optional" (pX <** optional (char 'z'))
                 [("az", [1]), ("bz", [2]), ("z", [1,2])
                 ,("", [1,2]), ("b", [2]), ("a", [1])]
@@ -130,7 +134,8 @@ main = do
             ]
 
     -- multiple with nullable argument
-    let pX = 1 <$$ char '1' <||> satisfy 0
+    let pX :: AltExprs Char Int
+        pX = 1 <$$ char '1' <||> satisfy 0
     test Nothing "multiple (nullable arg)" 
         (multiple pX) [("11", [[1,1]]), ("",[[]]), ("e", [])]
 
@@ -142,25 +147,29 @@ main = do
                     ,("aa", ["ab"])]
 
     let pX = (\x y -> [x,y]) <$$ char 'a' <**> pL <**> pL <** char 'e'
-        pL =    1 <$$ char 'b'
+        pL :: AltExprs Char Int
+        pL =     1 <$$ char 'b'
             <||> 2 <$$ char 'b' <** char 'c'
             <||> 3 <$$ char 'c' <** char 'd'
             <||> 4 <$$ char 'd'
     test Nothing "longambig" pX [("abcde", [[1,3],[2,4]]), ("abcdd", [])]
 
-    let pX = "X" <::=> (1 <$$ multiple1 (char 'a') <||> 2 <$$ multiple (char 'b'))
+    let pX :: BNF Char Int
+        pX = "X" <::=> (1 <$$ multiple1 (char 'a') <||> 2 <$$ multiple (char 'b'))
         pY = "Y" <::=> (+) <$$> pX <**> pY
                    <||> satisfy 0
     test Nothing "multiple1 & multiple & recursion + ambiguities" pY
         [("ab", [3]),("aa", [1,2]), (replicate 10 'a', [1..10])]
 
-    let pX = "X" <::=>  1 <$$ char 'a' <||> satisfy 0
+    let pX :: BNF Char Int
+        pX = "X" <::=>  1 <$$ char 'a' <||> satisfy 0
         pY = "Y" <::=> (+) <$$> pX <**> pY
     -- shouldn't this be 1 + infinite 0's?
     test Nothing "no parse infinite rec?" pY 
         [("a", [])]
 
-    let pS = "S" <::=> ((\x y -> x+y+1) <$$ char '1' <**> pS <**> pS) <||> satisfy 0    
+    let pS :: BNF Char Int
+        pS = "S" <::=> ((\x y -> x+y+1) <$$ char '1' <**> pS <**> pS) <||> satisfy 0    
     test Nothing "aho_S" pS [("", [0]), ("1", [1]), (replicate 5 '1', [5])]
 
 
@@ -168,7 +177,8 @@ main = do
     test Nothing "aho_S" pS [("", ["0"]), ("1", ["100"]), ("11", ["10100", "11000"])
                     ,(replicate 5 '1', aho_S_5)]
 
-    let pE = "E" <::=> (\x y z -> x+y+z) <$$> pE <**> pE <**> pE 
+    let pE :: BNF Char Int
+        pE = "E" <::=> (\x y z -> x+y+z) <$$> pE <**> pE <**> pE 
                              <||> 1 <$$ char '1'
                              <||> satisfy 0
     test Nothing "EEE" pE [("", [0]), ("1", [1]), ("11", [2])
@@ -180,19 +190,23 @@ main = do
     test Nothing "EEE ambig" pE [("", ["0"]), ("1", ["1"])
                         ,("11", ["110", "011", "101"]), ("111", _EEE_3)]
 
-    let pX = "X" <::=>  maybe 0 (const 1) <$$> optional (char 'z') 
+    let pX :: BNF Char Int
+        pX = "X" <::=>  maybe 0 (const 1) <$$> optional (char 'z') 
                     <||> (+1) <$$> pX <** char '1'
     test Nothing "simple left-recursion" pX [("", [0]), ("z11", [3]), ("z", [1])
                                     ,(replicate 100 '1', [100])]
 
-    let pX = "X" <::=> satisfy 0 
+    let pX :: BNF Char Int
+        pX = "X" <::=> satisfy 0 
                     <||> (+1) <$$ pB <**> pX <** char '1'
+        pB :: AltExpr Char Int
         pB = maybe 0 (const 0) <$$> optional (char 'z')
     test Nothing "hidden left-recursion" pX 
         [("", [0]), ("zz11", [2]), ("z11", [2]), ("11", [2])
         ,(replicate 100 '1', [100])]
 
     let pX = "X" <::=> (+) <$$> pY <**> pA
+        pA :: AltExprs Char Int
         pA = 1 <$$ char 'a' <** char 'b' <||> satisfy 0
         pY = "Y" <::=> satisfy 0 <||> pX 
     test Nothing "hidden left-recursion + infinite derivations" pX
@@ -201,6 +215,7 @@ main = do
     putStrLn "Tests that use memoisation"
 
     let tab = newMemoTable
+        pX :: BNF Char Int
         pX = "X" <::=> (1 <$$ multiple1 (char 'a') <||> 2 <$$ multiple (char 'b'))
         pY = memo tab ("Y" <::=> (+) <$$> pX <**> pY
                    <||> satisfy 0)
@@ -208,6 +223,7 @@ main = do
         [("ab", [3]),("aa", [1,2]), (replicate 10 'a', [1..10])]
 
     let tab = newMemoTable 
+        pX :: BNF Char Int
         pX = "X" <::=>  1 <$$ char 'a' <||> satisfy 0
         pY = memo tab ("Y" <::=> (+) <$$> pX <**> pY)
     -- shouldn't this be 1 + infinite 0's?
@@ -216,6 +232,7 @@ main = do
 
     --  Higher ambiguities
     let tab = newMemoTable
+        pE :: BNF Char Int
         pE = memo tab ("E" <::=> (\x y z -> x+y+z) <$$> pE <**> pE <**> pE 
                              <||> 1 <$$ char '1'
                              <||> satisfy 0)
@@ -224,6 +241,7 @@ main = do
 
     let tab = newMemoTable
         pX = "X" <::=> (+) <$$> pY <**> pA
+        pA :: AltExprs Char Int
         pA = 1 <$$ char 'a' <** char 'b' <||> satisfy 0
         pY = memo tab ("Y" <::=> satisfy 0 <||> pX)
     test (Just tab) "hidden left-recursion + infinite derivations" pX
@@ -241,12 +259,14 @@ main = do
     test Nothing "A>A" pX   [("aaa", ["abb"]),("aa", ["ab"])] 
 
     let pX = "X" <:=> multiple pY
-         where pY = 1 <$$ char '1' <||> 2 <$$ char '1' <** char '1'
+         where pY :: AltExprs Char Int
+               pY = 1 <$$ char '1' <||> 2 <$$ char '1' <** char '1'
     test Nothing "multiple" pX 
       [("", [[]]), ("1", [[1]]), ("11", [[1,1],[2]]), ("111", [[1,1,1], [2,1], [1,2]])]
 
     let pX = "X" <:=> some pY
-         where pY = 1 <$$ char '1' <||> 2 <$$ char '1' <** char '1'
+         where pY :: AltExprs Char Int
+               pY = 1 <$$ char '1' <||> 2 <$$ char '1' <** char '1'
     test Nothing "some" pX 
       [("", [[]]), ("1", [[1]]), ("11", [[2]]), ("111", [[2,1]])]
 
@@ -259,7 +279,8 @@ main = do
 -}
 
     let pX = "X" <:=> many pY
-         where pY = 1 <$$ char '1' <||> 2 <$$ char '1' <** char '1'
+         where pY :: AltExprs Char Int
+               pY = 1 <$$ char '1' <||> 2 <$$ char '1' <** char '1'
     test Nothing "many" pX 
       [("", [[]]), ("1", [[1]]), ("11", [[1,1]]), ("111", [[1,1,1]])]
  

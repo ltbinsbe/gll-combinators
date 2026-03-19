@@ -4,7 +4,7 @@
 -- UUAGC 0.9.52.1 (src/GLL/Types/Abstract.ag)
 module GLL.Types.Grammar where
 
-import Data.Text
+import Data.Text hiding (show)
 
 -- | Identifier for nonterminals.
 type Nt  = Text 

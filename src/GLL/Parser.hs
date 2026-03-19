@@ -177,7 +177,6 @@ module GLL.Parser (
 
 import Data.Foldable hiding (forM_, toList, sum)
 import Prelude  hiding (lookup, foldr, fmap, foldl, elem, any, concatMap)
-import Control.Applicative 
 import Control.Monad
 import qualified Data.IntMap as IM
 import qualified Data.Map as M
@@ -325,11 +324,10 @@ instance (Show t) => Show (SPPFNode t) where
 
 instance Applicative (GLL t) where
     (<*>) = ap
-    pure  = return
+    pure v = GLL $ \_ p -> (v, p)
 instance Functor (GLL t) where
     fmap  = liftM
 instance Monad (GLL t) where
-    return a = GLL $ \_ p -> (a, p)
     (GLL m) >>= f  = GLL $ \o p -> let (a, p')  = m o p
                                        (GLL m') = f a
                                     in m' o p'
@@ -372,6 +370,7 @@ gll :: Parseable t => Flags -> Int -> Bool -> Grammar t -> Input t ->
 gll flags m debug (start, prods) input = 
     (runGLL (pLhs (start, 0)) flags context, selects, follows)
  where 
+    context :: (Ord t) => Mutable t 
     context = Mutable emptySPPF [] IM.empty IM.empty IM.empty IM.empty counters
     counters = Counters 0 0
 
@@ -452,7 +451,8 @@ gll flags m debug (start, prods) input =
                       | otherwise = True
     altsOf x          = prodMap M.! x
     merge m1 m2 = IM.unionWith inner m1 m2
-     where inner  = IM.unionWith S.union 
+     where inner :: (Ord t) => IM.IntMap (S.Set t) -> IM.IntMap (S.Set t) -> IM.IntMap (S.Set t)
+           inner  = IM.unionWith S.union  
 
 count_pnode :: GLL t ()
 count_pnode = GLL $ \flags mut -> 

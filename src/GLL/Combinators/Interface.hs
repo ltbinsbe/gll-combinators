@@ -254,7 +254,6 @@ import Control.Monad (when)
 import GLL.Types.TypeCompose (OO(..))
 import Control.Arrow
 import qualified Data.Array as A
-import qualified Data.IntMap as IM
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Data.Text (pack)

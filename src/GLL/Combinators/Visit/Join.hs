@@ -2,7 +2,6 @@
 
 module GLL.Combinators.Visit.Join where
 
-import GLL.Types.Derivations
 import GLL.Types.Grammar
 import GLL.Combinators.Visit.Sem
 import GLL.Combinators.Visit.Grammar
